@@ -1,0 +1,877 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CineReviews - Movie Review Hub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            box-sizing: border-box;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+        
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+        }
+        
+        @keyframes starFill {
+            from {
+                transform: scale(0.8);
+                opacity: 0.5;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+        
+        @keyframes goldShimmer {
+            0% {
+                background-position: -200% center;
+            }
+            100% {
+                background-position: 200% center;
+            }
+        }
+        
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0px);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+        
+        .page-load {
+            animation: fadeIn 0.8s ease-out;
+        }
+        
+        .new-review {
+            animation: fadeInUp 0.6s ease-out;
+        }
+        
+        .star-hover {
+            transition: all 0.2s ease;
+        }
+        
+        .star-hover:hover {
+            transform: scale(1.2);
+            filter: drop-shadow(0 0 8px #FFD700);
+        }
+        
+        .review-card {
+            transition: all 0.3s ease;
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.05) 0%, rgba(28, 28, 28, 0.8) 100%);
+            border: 1px solid rgba(255, 215, 0, 0.2);
+        }
+        
+        .review-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px rgba(255, 215, 0, 0.1), 0 0 20px rgba(255, 215, 0, 0.05);
+            border-color: rgba(255, 215, 0, 0.4);
+        }
+        
+        .form-input {
+            transition: all 0.3s ease;
+            background: rgba(28, 28, 28, 0.6);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+        }
+        
+        .form-input:focus {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(255, 215, 0, 0.2);
+            border-color: #FFD700;
+        }
+        
+        .submit-btn {
+            transition: all 0.3s ease;
+            background: linear-gradient(135deg, #E50914 0%, #B8070F 100%);
+        }
+        
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(229, 9, 20, 0.4);
+            background: linear-gradient(135deg, #FF0A1A 0%, #E50914 100%);
+        }
+        
+        .rating-star {
+            animation: starFill 0.3s ease-out;
+        }
+        
+        .average-badge {
+            animation: pulse 2s infinite;
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+        }
+        
+        .gold-shimmer {
+            background: linear-gradient(90deg, #FFD700, #FFA500, #FFD700);
+            background-size: 200% 100%;
+            animation: goldShimmer 3s ease-in-out infinite;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .floating-element {
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        .glass-effect {
+            background: rgba(28, 28, 28, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 215, 0, 0.2);
+        }
+        
+        .decorative-dots::before {
+            content: '';
+            position: absolute;
+            top: -20px;
+            right: -20px;
+            width: 100px;
+            height: 100px;
+            background: radial-gradient(circle, rgba(255, 215, 0, 0.1) 2px, transparent 2px);
+            background-size: 20px 20px;
+            border-radius: 50%;
+        }
+        
+        .glow-border {
+            position: relative;
+        }
+        
+        .glow-border::before {
+            content: '';
+            position: absolute;
+            inset: -2px;
+            background: linear-gradient(45deg, #FFD700, transparent, #E50914, transparent, #FFD700);
+            border-radius: inherit;
+            z-index: -1;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .glow-border:hover::before {
+            opacity: 1;
+        }
+        
+        .mobile-menu {
+            transform: translateX(-100%);
+            transition: transform 0.3s ease;
+        }
+        
+        .mobile-menu.open {
+            transform: translateX(0);
+        }
+        
+        .hamburger {
+            transition: all 0.3s ease;
+        }
+        
+        .hamburger.open .line1 {
+            transform: rotate(-45deg) translate(-5px, 6px);
+        }
+        
+        .hamburger.open .line2 {
+            opacity: 0;
+        }
+        
+        .hamburger.open .line3 {
+            transform: rotate(45deg) translate(-5px, -6px);
+        }
+        
+        .read-more-btn {
+            transition: all 0.2s ease;
+        }
+        
+        .read-more-btn:hover {
+            transform: scale(1.05);
+        }
+        
+        .filter-btn {
+            transition: all 0.3s ease;
+            background: rgba(28, 28, 28, 0.6);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+        }
+        
+        .filter-btn.active {
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            color: #1C1C1C;
+            border-color: #FFD700;
+        }
+        
+        .filter-btn:hover {
+            border-color: #FFD700;
+            transform: translateY(-1px);
+        }
+        
+        .error-message {
+            animation: slideDown 0.3s ease-out;
+        }
+        
+        .movie-poster {
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.1) 0%, rgba(28, 28, 28, 0.9) 100%);
+            border: 1px solid rgba(255, 215, 0, 0.2);
+        }
+    </style>
+</head>
+<body style="background-color: #1C1C1C; color: #F5F5F5;" class="min-h-screen font-sans">
+    <!-- Header -->
+    <header class="glass-effect sticky top-0 z-50 border-b" style="border-color: rgba(255, 215, 0, 0.2);">
+        <nav class="container mx-auto px-6 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <div class="text-4xl floating-element">🎬</div>
+                    <h1 class="text-3xl font-bold gold-shimmer">
+                        CineReviews
+                    </h1>
+                </div>
+                
+                <!-- Desktop Navigation -->
+                <div class="hidden md:flex items-center space-x-8">
+                    <div class="relative">
+                        <input 
+                            type="text" 
+                            id="searchInput"
+                            placeholder="🔍 Search movies..."
+                            class="form-input px-4 py-2 rounded-lg text-sm w-64"
+                            style="color: #F5F5F5; background: rgba(28, 28, 28, 0.6); border: 1px solid rgba(255, 215, 0, 0.3);"
+                        >
+                    </div>
+                    <a href="#reviews" class="nav-link transition-colors duration-300 hover:drop-shadow-lg" style="color: #F5F5F5;">Reviews</a>
+                    <a href="#submit" class="nav-link transition-colors duration-300 hover:drop-shadow-lg" style="color: #F5F5F5;">Submit Review</a>
+                    <a href="#about" class="nav-link transition-colors duration-300 hover:drop-shadow-lg" style="color: #F5F5F5;">About</a>
+                </div>
+                
+                <!-- Mobile Hamburger -->
+                <button class="md:hidden hamburger" id="mobileMenuBtn">
+                    <div class="w-6 h-0.5 line1" style="background-color: #F5F5F5; margin: 5px 0; transition: 0.3s;"></div>
+                    <div class="w-6 h-0.5 line2" style="background-color: #F5F5F5; margin: 5px 0; transition: 0.3s;"></div>
+                    <div class="w-6 h-0.5 line3" style="background-color: #F5F5F5; margin: 5px 0; transition: 0.3s;"></div>
+                </button>
+            </div>
+        </nav>
+        
+        <!-- Mobile Menu -->
+        <div class="mobile-menu fixed top-0 left-0 w-full h-full glass-effect z-40 md:hidden" id="mobileMenu">
+            <div class="flex flex-col items-center justify-center h-full space-y-8 text-2xl">
+                <input 
+                    type="text" 
+                    id="mobileSearchInput"
+                    placeholder="🔍 Search movies..."
+                    class="form-input px-4 py-3 rounded-lg w-80 text-lg"
+                    style="color: #F5F5F5; background: rgba(28, 28, 28, 0.6); border: 1px solid rgba(255, 215, 0, 0.3);"
+                >
+                <a href="#reviews" class="mobile-nav-link transition-colors duration-300" style="color: #F5F5F5;">Reviews</a>
+                <a href="#submit" class="mobile-nav-link transition-colors duration-300" style="color: #F5F5F5;">Submit Review</a>
+                <a href="#about" class="mobile-nav-link transition-colors duration-300" style="color: #F5F5F5;">About</a>
+            </div>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-6 py-8">
+        <!-- Hero Section -->
+        <section class="text-center mb-16 relative decorative-dots">
+            <div class="floating-element mb-6">
+                <div class="text-6xl mb-4">🍿</div>
+            </div>
+            <h2 class="text-6xl font-bold mb-6 gold-shimmer">
+                Share Your Movie Experience
+            </h2>
+            <p class="text-xl max-w-2xl mx-auto leading-relaxed" style="color: #F5F5F5;">
+                Discover amazing films through the eyes of fellow movie lovers. Rate, review, and explore the world of cinema!
+            </p>
+            <div class="flex justify-center space-x-4 mt-8">
+                <div class="text-2xl">🎭</div>
+                <div class="text-2xl">🎪</div>
+                <div class="text-2xl">🎨</div>
+            </div>
+        </section>
+
+        <!-- Review Submission Form -->
+        <section id="submit" class="mb-16">
+            <div class="max-w-2xl mx-auto glass-effect rounded-2xl p-8 glow-border relative">
+                <div class="text-center mb-8">
+                    <div class="text-4xl mb-4">✨</div>
+                    <h3 class="text-4xl font-bold gold-shimmer">Submit Your Review</h3>
+                </div>
+                <form id="reviewForm" class="space-y-6">
+                    <div>
+                        <label for="movieName" class="block text-sm font-medium mb-2" style="color: #FFD700;">🎬 Movie Name</label>
+                        <input 
+                            type="text" 
+                            id="movieName" 
+                            name="movieName"
+                            class="form-input w-full px-4 py-3 rounded-lg focus:outline-none"
+                            style="color: #F5F5F5;"
+                            placeholder="Enter movie title..."
+                            required
+                        >
+                    </div>
+                    
+                    <div>
+                        <label for="reviewerName" class="block text-sm font-medium mb-2" style="color: #FFD700;">👤 Your Name</label>
+                        <input 
+                            type="text" 
+                            id="reviewerName" 
+                            name="reviewerName"
+                            class="form-input w-full px-4 py-3 rounded-lg focus:outline-none"
+                            style="color: #F5F5F5;"
+                            placeholder="Enter your name..."
+                            required
+                        >
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium mb-2" style="color: #FFD700;">⭐ Rating</label>
+                        <div class="flex space-x-2 justify-center p-4 rounded-lg" style="background: rgba(255, 215, 0, 0.1);" id="ratingStars">
+                            <span class="star-hover cursor-pointer text-4xl" style="color: rgba(255, 215, 0, 0.3);" data-rating="1">⭐</span>
+                            <span class="star-hover cursor-pointer text-4xl" style="color: rgba(255, 215, 0, 0.3);" data-rating="2">⭐</span>
+                            <span class="star-hover cursor-pointer text-4xl" style="color: rgba(255, 215, 0, 0.3);" data-rating="3">⭐</span>
+                            <span class="star-hover cursor-pointer text-4xl" style="color: rgba(255, 215, 0, 0.3);" data-rating="4">⭐</span>
+                            <span class="star-hover cursor-pointer text-4xl" style="color: rgba(255, 215, 0, 0.3);" data-rating="5">⭐</span>
+                        </div>
+                        <input type="hidden" id="rating" name="rating" required>
+                    </div>
+                    
+                    <div>
+                        <label for="comment" class="block text-sm font-medium mb-2" style="color: #FFD700;">💭 Your Review</label>
+                        <textarea 
+                            id="comment" 
+                            name="comment"
+                            rows="4"
+                            class="form-input w-full px-4 py-3 rounded-lg focus:outline-none resize-none"
+                            style="color: #F5F5F5;"
+                            placeholder="Share your thoughts about the movie..."
+                            required
+                        ></textarea>
+                    </div>
+                    
+                    <button 
+                        type="submit" 
+                        class="submit-btn w-full font-bold py-4 px-6 rounded-lg focus:outline-none text-white text-lg"
+                    >
+                        🚀 Submit Review
+                    </button>
+                </form>
+            </div>
+        </section>
+
+        <!-- Reviews Display -->
+        <section id="reviews">
+            <div class="text-center mb-12">
+                <div class="text-5xl mb-4">🎪</div>
+                <h3 class="text-5xl font-bold gold-shimmer">Movie Reviews</h3>
+                <p class="text-lg mt-4" style="color: #F5F5F5;">What our community is watching</p>
+            </div>
+            
+            <!-- Filters and Controls -->
+            <div class="mb-8 flex flex-wrap justify-center gap-4">
+                <button class="filter-btn px-4 py-2 rounded-lg text-sm font-medium active" data-filter="all" style="color: #F5F5F5;">
+                    All Reviews
+                </button>
+                <button class="filter-btn px-4 py-2 rounded-lg text-sm font-medium" data-filter="5" style="color: #F5F5F5;">
+                    ⭐⭐⭐⭐⭐ 5 Stars
+                </button>
+                <button class="filter-btn px-4 py-2 rounded-lg text-sm font-medium" data-filter="4" style="color: #F5F5F5;">
+                    ⭐⭐⭐⭐ 4+ Stars
+                </button>
+                <button class="filter-btn px-4 py-2 rounded-lg text-sm font-medium" data-filter="3" style="color: #F5F5F5;">
+                    ⭐⭐⭐ 3+ Stars
+                </button>
+                <select id="sortSelect" class="filter-btn px-4 py-2 rounded-lg text-sm" style="color: #F5F5F5;">
+                    <option value="latest">📅 Latest First</option>
+                    <option value="oldest">📅 Oldest First</option>
+                    <option value="highest">⭐ Highest Rated</option>
+                    <option value="lowest">⭐ Lowest Rated</option>
+                </select>
+            </div>
+            
+            <div id="reviewsContainer" class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                <!-- Reviews will be dynamically added here -->
+            </div>
+            <div id="noReviews" class="text-center text-xl py-16">
+                <div class="text-8xl mb-6 floating-element">🎭</div>
+                <p style="color: #FFD700;" class="text-2xl font-semibold mb-2">No reviews yet!</p>
+                <p style="color: #F5F5F5;">Be the first to share your movie experience and help others discover great films.</p>
+            </div>
+        </section>
+        <!-- About Section -->
+        <section id="about" class="mt-20 mb-16">
+            <div class="max-w-4xl mx-auto glass-effect rounded-2xl p-8">
+                <div class="text-center mb-8">
+                    <div class="text-5xl mb-4">🎭</div>
+                    <h3 class="text-4xl font-bold gold-shimmer mb-4">About CineReviews</h3>
+                </div>
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div>
+                        <h4 class="text-2xl font-bold mb-4" style="color: #FFD700;">🌟 Our Mission</h4>
+                        <p class="leading-relaxed mb-6" style="color: #F5F5F5;">
+                            CineReviews is a passionate community of movie lovers dedicated to sharing honest, 
+                            insightful reviews that help others discover their next favorite film. We believe 
+                            every movie deserves a fair review and every viewer deserves an authentic perspective.
+                        </p>
+                        <h4 class="text-2xl font-bold mb-4" style="color: #FFD700;">🎬 Features</h4>
+                        <ul class="space-y-2" style="color: #F5F5F5;">
+                            <li>• Interactive star rating system</li>
+                            <li>• Advanced filtering and sorting</li>
+                            <li>• Movie search functionality</li>
+                            <li>• Average ratings per movie</li>
+                            <li>• Responsive design for all devices</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="text-2xl font-bold mb-4" style="color: #FFD700;">📊 Community Stats</h4>
+                        <div class="space-y-4">
+                            <div class="glass-effect p-4 rounded-lg">
+                                <div class="text-3xl font-bold gold-shimmer" id="totalReviews">0</div>
+                                <div style="color: #F5F5F5;">Total Reviews</div>
+                            </div>
+                            <div class="glass-effect p-4 rounded-lg">
+                                <div class="text-3xl font-bold gold-shimmer" id="totalMovies">0</div>
+                                <div style="color: #F5F5F5;">Movies Reviewed</div>
+                            </div>
+                            <div class="glass-effect p-4 rounded-lg">
+                                <div class="text-3xl font-bold gold-shimmer" id="averageRating">0.0</div>
+                                <div style="color: #F5F5F5;">Average Rating</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="glass-effect border-t mt-20" style="border-color: rgba(255, 215, 0, 0.2);">
+        <div class="container mx-auto px-6 py-12">
+            <div class="text-center mb-8">
+                <div class="text-4xl mb-4">🎬</div>
+                <h4 class="text-2xl font-bold gold-shimmer mb-2">CineReviews</h4>
+                <p style="color: #F5F5F5;">Connecting movie lovers worldwide</p>
+            </div>
+            <div class="grid md:grid-cols-3 gap-8 mb-8">
+                <div class="text-center">
+                    <h5 class="font-bold mb-4" style="color: #FFD700;">Quick Links</h5>
+                    <div class="space-y-2">
+                        <a href="#reviews" class="block transition-colors duration-300" style="color: #F5F5F5;" onmouseover="this.style.color='#FFD700'" onmouseout="this.style.color='#F5F5F5'">Browse Reviews</a>
+                        <a href="#submit" class="block transition-colors duration-300" style="color: #F5F5F5;" onmouseover="this.style.color='#FFD700'" onmouseout="this.style.color='#F5F5F5'">Submit Review</a>
+                        <a href="#about" class="block transition-colors duration-300" style="color: #F5F5F5;" onmouseover="this.style.color='#FFD700'" onmouseout="this.style.color='#F5F5F5'">About Us</a>
+                    </div>
+                </div>
+                <div class="text-center">
+                    <h5 class="font-bold mb-4" style="color: #FFD700;">Connect</h5>
+                    <div class="flex justify-center space-x-4">
+                        <a href="https://github.com" target="_blank" rel="noopener noreferrer" class="transition-all duration-300 text-2xl hover:scale-125" style="color: #F5F5F5;" onmouseover="this.style.color='#FFD700'" onmouseout="this.style.color='#F5F5F5'">💻</a>
+                        <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" class="transition-all duration-300 text-2xl hover:scale-125" style="color: #F5F5F5;" onmouseover="this.style.color='#FFD700'" onmouseout="this.style.color='#F5F5F5'">🐦</a>
+                        <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" class="transition-all duration-300 text-2xl hover:scale-125" style="color: #F5F5F5;" onmouseover="this.style.color='#FFD700'" onmouseout="this.style.color='#F5F5F5'">📷</a>
+                        <a href="mailto:contact@cinereviews.com" class="transition-all duration-300 text-2xl hover:scale-125" style="color: #F5F5F5;" onmouseover="this.style.color='#FFD700'" onmouseout="this.style.color='#F5F5F5'">📧</a>
+                    </div>
+                </div>
+                <div class="text-center">
+                    <h5 class="font-bold mb-4" style="color: #FFD700;">Project</h5>
+                    <div class="space-y-2">
+                        <a href="https://github.com/cinereviews" target="_blank" rel="noopener noreferrer" class="block transition-colors duration-300" style="color: #F5F5F5;" onmouseover="this.style.color='#FFD700'" onmouseout="this.style.color='#F5F5F5'">GitHub Repository</a>
+                        <a href="#" class="block transition-colors duration-300" style="color: #F5F5F5;" onmouseover="this.style.color='#FFD700'" onmouseout="this.style.color='#F5F5F5'">Portfolio</a>
+                        <a href="#" class="block transition-colors duration-300" style="color: #F5F5F5;" onmouseover="this.style.color='#FFD700'" onmouseout="this.style.color='#F5F5F5'">Documentation</a>
+                    </div>
+                </div>
+            </div>
+            <div class="text-center border-t pt-8" style="border-color: rgba(255, 215, 0, 0.2);">
+                <p style="color: #F5F5F5;">&copy; 2024 CineReviews. Made with ❤️ for movie lovers everywhere.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        let reviews = [];
+        let selectedRating = 0;
+        let currentFilter = 'all';
+        let currentSort = 'latest';
+
+        // Page load animation
+        document.body.classList.add('page-load');
+
+        // Mobile menu functionality
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const mobileMenu = document.getElementById('mobileMenu');
+        const hamburger = document.querySelector('.hamburger');
+
+        mobileMenuBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('open');
+            hamburger.classList.toggle('open');
+        });
+
+        // Close mobile menu when clicking on links
+        document.querySelectorAll('.mobile-nav-link').forEach(link => {
+            link.addEventListener('click', () => {
+                mobileMenu.classList.remove('open');
+                hamburger.classList.remove('open');
+            });
+        });
+
+        // Navigation hover effects
+        document.querySelectorAll('.nav-link, .mobile-nav-link').forEach(link => {
+            link.addEventListener('mouseenter', function() {
+                this.style.color = '#FFD700';
+            });
+            link.addEventListener('mouseleave', function() {
+                this.style.color = '#F5F5F5';
+            });
+        });
+
+        // Search functionality
+        const searchInput = document.getElementById('searchInput');
+        const mobileSearchInput = document.getElementById('mobileSearchInput');
+
+        function handleSearch(query) {
+            const filteredReviews = reviews.filter(review => 
+                review.movieName.toLowerCase().includes(query.toLowerCase()) ||
+                review.reviewerName.toLowerCase().includes(query.toLowerCase()) ||
+                review.comment.toLowerCase().includes(query.toLowerCase())
+            );
+            displayFilteredReviews(filteredReviews);
+        }
+
+        searchInput.addEventListener('input', (e) => handleSearch(e.target.value));
+        mobileSearchInput.addEventListener('input', (e) => handleSearch(e.target.value));
+
+        // Filter functionality
+        document.querySelectorAll('.filter-btn[data-filter]').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.filter-btn[data-filter]').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                currentFilter = this.dataset.filter;
+                applyFiltersAndSort();
+            });
+        });
+
+        // Sort functionality
+        document.getElementById('sortSelect').addEventListener('change', function() {
+            currentSort = this.value;
+            applyFiltersAndSort();
+        });
+
+        function applyFiltersAndSort() {
+            let filteredReviews = [...reviews];
+
+            // Apply filter
+            if (currentFilter !== 'all') {
+                const minRating = parseInt(currentFilter);
+                filteredReviews = filteredReviews.filter(review => review.rating >= minRating);
+            }
+
+            // Apply sort
+            switch (currentSort) {
+                case 'latest':
+                    filteredReviews.sort((a, b) => b.timestamp - a.timestamp);
+                    break;
+                case 'oldest':
+                    filteredReviews.sort((a, b) => a.timestamp - b.timestamp);
+                    break;
+                case 'highest':
+                    filteredReviews.sort((a, b) => b.rating - a.rating);
+                    break;
+                case 'lowest':
+                    filteredReviews.sort((a, b) => a.rating - b.rating);
+                    break;
+            }
+
+            displayFilteredReviews(filteredReviews);
+        }
+
+        // Rating star functionality
+        const stars = document.querySelectorAll('#ratingStars span');
+        const ratingInput = document.getElementById('rating');
+
+        stars.forEach((star, index) => {
+            star.addEventListener('click', () => {
+                selectedRating = index + 1;
+                ratingInput.value = selectedRating;
+                updateStarDisplay();
+            });
+
+            star.addEventListener('mouseenter', () => {
+                highlightStars(index + 1);
+            });
+        });
+
+        document.getElementById('ratingStars').addEventListener('mouseleave', () => {
+            updateStarDisplay();
+        });
+
+        function highlightStars(rating) {
+            stars.forEach((star, index) => {
+                if (index < rating) {
+                    star.style.color = '#FFD700';
+                    star.style.filter = 'drop-shadow(0 0 8px #FFD700)';
+                    star.style.transform = 'scale(1.2)';
+                } else {
+                    star.style.color = 'rgba(255, 215, 0, 0.3)';
+                    star.style.filter = 'none';
+                    star.style.transform = 'scale(1)';
+                }
+            });
+        }
+
+        function updateStarDisplay() {
+            stars.forEach((star, index) => {
+                if (index < selectedRating) {
+                    star.style.color = '#FFD700';
+                    star.style.filter = 'drop-shadow(0 0 5px #FFD700)';
+                    star.style.transform = 'scale(1)';
+                    star.classList.add('rating-star');
+                } else {
+                    star.style.color = 'rgba(255, 215, 0, 0.3)';
+                    star.style.filter = 'none';
+                    star.style.transform = 'scale(1)';
+                    star.classList.remove('rating-star');
+                }
+            });
+        }
+
+        // Form validation and submission
+        document.getElementById('reviewForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Clear previous error messages
+            document.querySelectorAll('.error-message').forEach(msg => msg.remove());
+            
+            const formData = new FormData(this);
+            const review = {
+                id: Date.now(),
+                movieName: formData.get('movieName').trim(),
+                reviewerName: formData.get('reviewerName').trim(),
+                rating: parseInt(formData.get('rating')),
+                comment: formData.get('comment').trim(),
+                timestamp: new Date()
+            };
+
+            // Validation
+            let hasErrors = false;
+
+            if (!review.movieName) {
+                showError('movieName', 'Please enter a movie name');
+                hasErrors = true;
+            }
+
+            if (!review.reviewerName) {
+                showError('reviewerName', 'Please enter your name');
+                hasErrors = true;
+            }
+
+            if (!review.rating) {
+                showError('ratingStars', 'Please select a rating');
+                hasErrors = true;
+            }
+
+            if (!review.comment) {
+                showError('comment', 'Please write a review');
+                hasErrors = true;
+            }
+
+            if (hasErrors) return;
+
+            reviews.push(review);
+            updateStats();
+            displayReviews();
+            this.reset();
+            selectedRating = 0;
+            updateStarDisplay();
+
+            // Smooth scroll to reviews
+            document.getElementById('reviews').scrollIntoView({ 
+                behavior: 'smooth',
+                block: 'start'
+            });
+        });
+
+        function showError(fieldId, message) {
+            const field = document.getElementById(fieldId);
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error-message text-red-400 text-sm mt-1';
+            errorDiv.textContent = message;
+            field.parentNode.appendChild(errorDiv);
+        }
+
+        function truncateText(text, maxLength = 150) {
+            if (text.length <= maxLength) return text;
+            return text.substring(0, maxLength) + '...';
+        }
+
+        function displayReviews() {
+            applyFiltersAndSort();
+        }
+
+        function displayFilteredReviews(reviewsToShow) {
+            const container = document.getElementById('reviewsContainer');
+            const noReviews = document.getElementById('noReviews');
+            
+            if (reviewsToShow.length === 0) {
+                noReviews.style.display = 'block';
+                container.innerHTML = '';
+                return;
+            }
+
+            noReviews.style.display = 'none';
+            
+            // Group reviews by movie and calculate averages
+            const movieGroups = {};
+            reviews.forEach(review => {
+                if (!movieGroups[review.movieName]) {
+                    movieGroups[review.movieName] = [];
+                }
+                movieGroups[review.movieName].push(review);
+            });
+
+            container.innerHTML = reviewsToShow.map(review => {
+                const movieReviews = movieGroups[review.movieName];
+                const averageRating = movieReviews.reduce((sum, r) => sum + r.rating, 0) / movieReviews.length;
+                const isLatest = review.id === Math.max(...reviews.map(r => r.id));
+                const truncatedComment = truncateText(review.comment);
+                const needsReadMore = review.comment.length > 150;
+                
+                return `
+                    <div class="review-card ${isLatest ? 'new-review' : ''} rounded-xl p-6 relative glow-border">
+                        ${movieReviews.length > 1 ? `
+                            <div class="average-badge absolute -top-3 -right-3 text-black text-xs font-bold px-4 py-2 rounded-full shadow-lg">
+                                Avg: ${averageRating.toFixed(1)} ⭐
+                            </div>
+                        ` : ''}
+                        
+                        <div class="flex items-start gap-4 mb-4">
+                            <div class="movie-poster w-16 h-20 rounded-lg flex items-center justify-center text-2xl">
+                                🎬
+                            </div>
+                            <div class="flex-1">
+                                <h4 class="text-xl font-bold mb-1" style="color: #FFD700;">${review.movieName}</h4>
+                                <p class="text-sm mb-2" style="color: #F5F5F5;">by ${review.reviewerName}</p>
+                                <div class="flex items-center space-x-1">
+                                    ${generateStars(review.rating)}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <p class="leading-relaxed" style="color: #F5F5F5;" id="comment-${review.id}">
+                                ${truncatedComment}
+                            </p>
+                            ${needsReadMore ? `
+                                <button 
+                                    class="read-more-btn text-sm mt-2 font-medium" 
+                                    style="color: #FFD700;"
+                                    onclick="toggleReadMore(${review.id}, '${review.comment.replace(/'/g, "\\'")}', this)"
+                                >
+                                    Read more
+                                </button>
+                            ` : ''}
+                        </div>
+                        
+                        <div class="flex justify-between items-center text-xs">
+                            <span style="color: #FFD700;">📅 ${review.timestamp.toLocaleDateString()}</span>
+                            <button onclick="deleteReview(${review.id})" class="transition-all duration-300 hover:scale-110" style="color: #E50914;">
+                                🗑️ Delete
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function toggleReadMore(reviewId, fullComment, button) {
+            const commentElement = document.getElementById(`comment-${reviewId}`);
+            const isExpanded = button.textContent === 'Read less';
+            
+            if (isExpanded) {
+                commentElement.textContent = truncateText(fullComment);
+                button.textContent = 'Read more';
+            } else {
+                commentElement.textContent = fullComment;
+                button.textContent = 'Read less';
+            }
+        }
+
+        function generateStars(rating) {
+            let stars = '';
+            for (let i = 1; i <= 5; i++) {
+                if (i <= rating) {
+                    stars += '<span class="text-lg" style="color: #FFD700; filter: drop-shadow(0 0 3px #FFD700);">⭐</span>';
+                } else {
+                    stars += '<span class="text-lg" style="color: rgba(255, 215, 0, 0.3);">⭐</span>';
+                }
+            }
+            return stars;
+        }
+
+        function deleteReview(id) {
+            reviews = reviews.filter(review => review.id !== id);
+            updateStats();
+            displayReviews();
+        }
+
+        function updateStats() {
+            const totalReviews = reviews.length;
+            const uniqueMovies = new Set(reviews.map(r => r.movieName)).size;
+            const averageRating = totalReviews > 0 ? 
+                (reviews.reduce((sum, r) => sum + r.rating, 0) / totalReviews).toFixed(1) : '0.0';
+
+            document.getElementById('totalReviews').textContent = totalReviews;
+            document.getElementById('totalMovies').textContent = uniqueMovies;
+            document.getElementById('averageRating').textContent = averageRating;
+        }
+
+        // Initialize display
+        updateStats();
+        displayReviews();
+
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98f88492f2682e59',t:'MTc2MDYyNzc5Mi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
